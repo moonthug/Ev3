@@ -9,7 +9,7 @@ int main()
 	//Create a structure that will store the LCD information
 	LCD my_lcd;
 	//Initialize and clear screen
-  dLcdInit(my_lcd.Lcd);
+	dLcdInit(my_lcd.Lcd);
 	LCDClear(my_lcd.Lcd);
 	//Draw and write something
 	dLcdRect(my_lcd.Lcd, FG_COLOR, 60, 60, 20, 20);

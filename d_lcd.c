@@ -73,7 +73,7 @@ struct fb_fix_screeninfo fix;
 int dll, fll;
 unsigned char *dbuf=NULL;
 
-//Lauro Ojeda added this gloval variables to avoid using lms2012.cpp
+//Lauro Ojeda added these two gloval variables to avoid using lms2012.cpp
 GLOBALS VMInstance;
 UI_GLOBALS UiInstance;
 
@@ -162,7 +162,7 @@ void      dLcdAutoUpdate(void)
       dLcdExec(&UiInstance.LcdBuffer);
       UiInstance.DisplayUpdate  =  0;
       UiInstance.DisplayTimer   =  0;
-      UiInstance.AllowUpdate    =  0;
+      //UiInstance.AllowUpdate    =  0; //Lauro Ojeda commented this out to allo multiple updates
     }
   }
 }
