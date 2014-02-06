@@ -1,22 +1,3 @@
-/*
- * Robot Navigation Program
- * www.robotnav.com
- *
- * (C) Copyright 2013 - 2014 Navigation Solutions, LLC
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
@@ -109,23 +90,23 @@ int main()
 		return -1;
 
 	for(i = 0;i<MAX_SAMPLES;i++)
-	{
+	{ //Print the direct outp from the XG1300L device
 		get_xg1300l_gyro(&angle, &rate, &acc_x, &acc_y, &acc_z);
 		sprintf(aux_buffer,"Angle: %0.2f [deg]   ", angle);
-		printf("%s\n", aux_buffer);
 		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 20, NORMAL_FONT, (signed char *)aux_buffer);
+		printf("%s\n", aux_buffer);
 		sprintf(aux_buffer, "Rate:  %0.2f [deg/s]   ", rate);
-		printf("%s\n", aux_buffer);
 		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 40, NORMAL_FONT, (signed char *)aux_buffer);
+		printf("%s\n", aux_buffer);
 		sprintf(aux_buffer, "AccX:  %0.2f [m/s^2]   ", acc_x);
-		printf("%s\n", aux_buffer);
 		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 60, NORMAL_FONT, (signed char *)aux_buffer);
-		sprintf(aux_buffer, "AccY:  %0.2f [m/s^2]   ", acc_y);
 		printf("%s\n", aux_buffer);
+		sprintf(aux_buffer, "AccY:  %0.2f [m/s^2]   ", acc_y);
 		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 80, NORMAL_FONT, (signed char *)aux_buffer);
+		printf("%s\n", aux_buffer);
 		sprintf(aux_buffer, "AccZ:  %0.2f [m/s^2]   ", acc_z);
-		printf("%s\n\n", aux_buffer);
 		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 100, NORMAL_FONT, (signed char *)aux_buffer);
+		printf("%s\n\n", aux_buffer);
 		dLcdUpdate(&my_lcd);
 		sleep(1);
 	}
