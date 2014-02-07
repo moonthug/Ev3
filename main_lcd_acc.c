@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
@@ -29,6 +30,8 @@
 #include "d_lcd.h"
 
 //Runtime constants
+const float GRAVITY = 9.80297286843;
+const float PI = 3.14159265358979;
 const int MAX_SAMPLES = 100;
 
 //Global variables and constants used by the sensor handling functions
@@ -99,6 +102,8 @@ int main()
 	float acc_y;
 	float acc_z;
 	char aux_buffer[200];
+	float pitch;
+	float roll;
 	
 	//Create a structure that will store the LCD information
 	LCD my_lcd;
@@ -110,23 +115,39 @@ int main()
 		return -1;
 
 	for(i = 0;i<MAX_SAMPLES;i++)
-	{ //Print the direct outp from the XG1300L device
+	{
 		get_xg1300l_gyro(&angle, &rate, &acc_x, &acc_y, &acc_z);
-		sprintf(aux_buffer,"Angle: %0.2f [deg]   ", angle);
-		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 20, NORMAL_FONT, (signed char *)aux_buffer);
-		printf("%s\n", aux_buffer);
-		sprintf(aux_buffer, "Rate:  %0.2f [deg/s]   ", rate);
-		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 40, NORMAL_FONT, (signed char *)aux_buffer);
-		printf("%s\n", aux_buffer);
-		sprintf(aux_buffer, "AccX:  %0.2f [m/s^2]   ", acc_x);
+		if(fabs(acc_y) < GRAVITY) // Acceleration measurement cannot be larger than GRAVITY
+		{ //Compute the PITCH angle
+			pitch = asin(acc_y / GRAVITY) ;
+			sprintf(aux_buffer,"Pitch: %0.2f [deg]   ", pitch * 180.0 / PI);
+			dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 20, NORMAL_FONT, (signed char *)aux_buffer);
+			printf("%s\n", aux_buffer);
+			if(fabs(acc_x) < GRAVITY)
+			{ //Compute the ROLL angle
+				roll = asin(acc_x / GRAVITY / cos(pitch));
+				sprintf(aux_buffer,"Roll: %0.2f [deg]   ", roll * 180.0 / PI);
+				dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 40, NORMAL_FONT, (signed char *)aux_buffer);
+				printf("%s\n", aux_buffer);
+			}
+			else
+			{ //ROLL angle is undefined
+				sprintf(aux_buffer,"Roll angle is undefined");
+				dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 40, NORMAL_FONT, (signed char *)aux_buffer);
+				printf("%s\n", aux_buffer);
+			}
+		}
+		else
+		{ // YAW angle is approximately the integrated output of the Z-axis gyro,
+			// this is NOT correct when there is significant roll or pitch angle changes while rotating the device
+			sprintf(aux_buffer,"Roll and Pitch angle are undefined");
+			dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 20, NORMAL_FONT, (signed char *)aux_buffer);
+			dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 40, NORMAL_FONT, (signed char *)aux_buffer);
+			printf("%s\n", aux_buffer);
+		}
+		sprintf(aux_buffer,"Yaw: %0.2f [deg]   ", angle);
 		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 60, NORMAL_FONT, (signed char *)aux_buffer);
 		printf("%s\n", aux_buffer);
-		sprintf(aux_buffer, "AccY:  %0.2f [m/s^2]   ", acc_y);
-		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 80, NORMAL_FONT, (signed char *)aux_buffer);
-		printf("%s\n", aux_buffer);
-		sprintf(aux_buffer, "AccZ:  %0.2f [m/s^2]   ", acc_z);
-		dLcdDrawText(my_lcd.Lcd, FG_COLOR, 1, 100, NORMAL_FONT, (signed char *)aux_buffer);
-		printf("%s\n\n", aux_buffer);
 		dLcdUpdate(&my_lcd);
 		sleep(1);
 	}
